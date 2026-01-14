@@ -69,7 +69,8 @@
                             <td>{{ task.title }}</td>
                             <td>{{ task.description }}</td>
                             <td>
-                                <select class="form-select form-select-sm">
+                                <select v-model="task.status" @change="confirmStatusChange(task, $event)"
+                                    class="form-select form-select-sm">
                                     <option value="pending">Pending</option>
                                     <option value="in_process">In Process</option>
                                     <option value="completed">Completed</option>
@@ -142,6 +143,14 @@ export default {
                 this.successMessage = '';
             }, 3000);
         },
+        getStatusLabel(status) {
+            const labels = {
+                'pending': 'Pending',
+                'in_process': 'In Process',
+                'completed': 'Completed'
+            };
+            return labels[status] || status;
+        },
         async loadTasks(page = 1) {
             this.loading = true;
             try {
@@ -178,6 +187,28 @@ export default {
             } catch (error) {
                 console.error('Failed to add task:', error);
                 alert('Failed to add task. Please try again.');
+            }
+        },
+        async confirmStatusChange(task, event) {
+            const newStatus = event.target.value;
+            const oldStatus = task.status;
+            if (!confirm(`Are you sure you want to change status to "${this.getStatusLabel(newStatus)}"?`)) {
+                task.status = oldStatus;
+                event.target.value = oldStatus;
+                return;
+            }
+            await this.updateStatus(task);
+        },
+        async updateStatus(task) {
+            try {
+                const response = await axios.put(`${this.apiUrl}/${task.id}`, {
+                    status: task.status
+                });
+                this.showSuccess(response.data.message || 'Task status updated successfully!');
+            } catch (error) {
+                console.error('Failed to update task:', error);
+                alert('Failed to update task. Please try again.');
+                this.loadTasks();
             }
         },
         changePage(page) {
