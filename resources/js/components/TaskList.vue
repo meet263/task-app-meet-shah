@@ -67,7 +67,7 @@
                         <tr v-for="(task, index) in tasks" :key="task.id">
                             <td>{{ pagination.from + index }}</td>
                             <td>{{ task.title }}</td>
-                            <td>{{ task.description }}</td>
+                            <td>{{ truncateText(task.description) }}</td>
                             <td>
                                 <select v-model="task.status" @change="confirmStatusChange(task, $event)"
                                     class="form-select form-select-sm">
@@ -179,6 +179,10 @@ export default {
         };
     },
     methods: {
+        truncateText(text, limit = 50) {
+            if (!text) return '-';
+            return text.length > limit ? text.substring(0, limit) + '...' : text;
+        },
         showSuccess(message) {
             this.successMessage = message;
             setTimeout(() => {
