@@ -76,10 +76,10 @@
                                     <option value="completed">Completed</option>
                                 </select>
                             </td>
-                            <td>{{ task.due_date || '-' }}</td>
+                            <td>{{ formatDate(task.due_date) }}</td>
                             <td>
-                                <button class="btn btn-info btn-sm me-1">View</button>
-                                <button class="btn btn-danger btn-sm">Delete</button>
+                                <button class="btn btn-info btn-sm me-1" @click="viewTask(task.id)">View</button>
+                                <button class="btn btn-danger btn-sm" @click="deleteTask(task.id)">Delete</button>
                             </td>
                         </tr>
                     </tbody>
@@ -106,6 +106,47 @@
                 </ul>
             </nav>
         </div>
+
+        <!-- View Task Modal -->
+        <div v-if="viewingTask" class="modal show d-block" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Task Details</h5>
+                        <button type="button" class="btn-close" @click="viewingTask = null"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <strong>Title:</strong>
+                            <p>{{ viewingTask.title }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Description:</strong>
+                            <p>{{ viewingTask.description || 'No description' }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Status:</strong>
+                            <p><span class="badge bg-secondary">{{ getStatusLabel(viewingTask.status) }}</span></p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Due Date:</strong>
+                            <p>{{ viewingTask.due_date ? formatDate(viewingTask.due_date) : 'No due date' }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Created:</strong>
+                            <p>{{ formatDate(viewingTask.created_at) }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Updated:</strong>
+                            <p>{{ formatDate(viewingTask.updated_at) }}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="viewingTask = null">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -125,6 +166,7 @@ export default {
             filter: '',
             loading: false,
             successMessage: '',
+            viewingTask: null,
             pagination: {
                 current_page: 1,
                 last_page: 1,
@@ -150,6 +192,10 @@ export default {
                 'completed': 'Completed'
             };
             return labels[status] || status;
+        },
+        formatDate(dateString) {
+            if (!dateString) return '-';
+            return new Date(dateString).toLocaleDateString('en-GB');
         },
         async loadTasks(page = 1) {
             this.loading = true;
@@ -209,6 +255,28 @@ export default {
                 console.error('Failed to update task:', error);
                 alert('Failed to update task. Please try again.');
                 this.loadTasks();
+            }
+        },
+        async viewTask(id) {
+            try {
+                const response = await axios.get(`${this.apiUrl}/${id}`);
+                this.viewingTask = response.data.data;
+            } catch (error) {
+                console.error('Failed to load task:', error);
+                alert('Failed to load task details.');
+            }
+        },
+        async deleteTask(id) {
+            if (!confirm('Are you sure you want to delete this task?')) {
+                return;
+            }
+            try {
+                await axios.delete(`${this.apiUrl}/${id}`);
+                this.showSuccess('Task deleted successfully!');
+                this.loadTasks();
+            } catch (error) {
+                console.error('Failed to delete task:', error);
+                alert('Failed to delete task. Please try again.');
             }
         },
         changePage(page) {
