@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Exception;
+use App\Models\Task;
 use App\Services\TaskService;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +12,7 @@ use App\Http\Resources\TaskResource;
 use App\Http\Helpers\PaginationHelper;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TaskController extends Controller
 {
@@ -43,7 +45,17 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        //
+        try {
+            $task = $this->service->create($request->validated());
+            return $this->successResponse(
+                new TaskResource($task),
+                'Task created successfully',
+                201
+            );
+        } catch (Exception $ex) {
+            Log::error('Failed to create task: ' . $ex->getMessage());
+            return $this->errorResponse('Failed to create task');
+        }
     }
 
     /**
@@ -51,7 +63,18 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $task = Task::findOrFail($id);
+            return $this->successResponse(
+                new TaskResource($task),
+                'Task retrieved successfully'
+            );
+        } catch (ModelNotFoundException $ex) {
+            return $this->errorResponse('Requested task not found', 404);
+        } catch (Exception $ex) {
+            Log::error('Failed to retrieve task: ' . $ex->getMessage());
+            return $this->errorResponse('Failed to retrieve task');
+        }
     }
 
     /**
@@ -59,7 +82,19 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, string $id)
     {
-        //
+        try {
+            $task = Task::findOrFail($id);
+            $task = $this->service->update($task, $request->validated());
+            return $this->successResponse(
+                new TaskResource($task),
+                'Task updated successfully'
+            );
+        } catch (ModelNotFoundException $ex) {
+            return $this->errorResponse('Requested task not found', 404);
+        } catch (Exception $ex) {
+            Log::error('Failed to update task: ' . $ex->getMessage());
+            return $this->errorResponse('Failed to update task');
+        }
     }
 
     /**
@@ -67,6 +102,18 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $task = Task::findOrFail($id);
+            $this->service->delete($task);
+            return $this->successResponse(
+                null,
+                'Task deleted successfully'
+            );
+        } catch (ModelNotFoundException $ex) {
+            return $this->errorResponse('Requested task not found', 404);
+        } catch (Exception $ex) {
+            Log::error('Failed to delete task: ' . $ex->getMessage());
+            return $this->errorResponse('Failed to delete task');
+        }
     }
 }

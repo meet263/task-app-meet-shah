@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Task;
+use App\Enums\TaskStatus;
 
 class TaskService
 {
@@ -17,16 +18,18 @@ class TaskService
 
     public function create(array $data)
     {
-        //
+        $data['status'] ??= TaskStatus::PENDING->value;
+        return Task::create($data);
     }
 
     public function update(Task $task, $data)
     {
-        //
+        $task->update($data);
+        return $task;
     }
 
     public function delete(Task $task)
     {
-        //
+        return $task->delete();
     }
 }
