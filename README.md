@@ -1,59 +1,232 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task App - Meet Shah
+A simple task management application built with Laravel 12 and Vue.js 3. Create, update, delete, and view your tasks with ease.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## What You Need
 
-## About Laravel
+- PHP 8.2 or newer
+- Composer (PHP package manager)
+- Node.js and npm (JavaScript package manager)
+- MySQL database
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Getting Started
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Step 1: Install Everything
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+First, install all the required packages:
 
-## Learning Laravel
+```bash
+composer install
+npm install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Step 2: Set Up Your Environment
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Copy the example environment file and generate an application key:
 
-## Laravel Sponsors
+```bash
+copy .env.example .env
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Step 3: Configure Your Database
 
-### Premium Partners
+Open the `.env` file and update these lines for MySQL:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=task_app_meet_shah
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Contributing
+### Step 4: Create Database Tables
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Run this command to create all necessary tables:
 
-## Code of Conduct
+```bash
+php artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Step 5: Add Sample Data
 
-## Security Vulnerabilities
+```bash
+php artisan db:seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Step 6: Start the Application
 
-## License
+You need TWO terminal windows open:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Terminal 1 - Start the frontend:**
+```bash
+npm run dev
+```
+
+**Terminal 2 - Start the backend:**
+```bash
+php artisan serve
+```
+
+### Step 7: Open Your Browser
+
+Go to: `http://localhost:8000`
+
+That's it! You're ready to manage tasks.
+
+## How to Use
+
+### Adding a Task
+1. Fill in the task title (required)
+2. Add a description (optional)
+3. Set a due date (optional)
+4. Click "Add Task"
+5. You'll see a success message
+
+### Viewing Tasks
+- See all tasks in a table format
+- Total count shown at the top
+- Latest tasks appear first
+- 10 tasks per page
+
+### Filtering Tasks
+Use the dropdown to filter by:
+- All Tasks
+- Pending
+- In Process
+- Completed
+
+### Updating Task Status
+1. Click the status dropdown for any task
+2. Select new status
+3. Confirm the change
+4. Success message appears
+
+### Deleting a Task
+1. Click the "Delete" button
+2. Confirm deletion
+3. Task is removed (soft delete - stays in database)
+
+## Features
+
+- Create new tasks with title, description, and due date
+- View all tasks in a clean table layout
+- Filter tasks by status
+- Update task status with confirmation
+- Delete tasks with confirmation
+- Pagination for large task lists
+- Success alerts for all actions
+- Latest tasks shown first
+- Total task count displayed
+- Responsive design (works on mobile)
+
+## API Endpoints
+
+The application provides a RESTful API:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/tasks` | Get all tasks (with pagination) |
+| POST | `/api/tasks` | Create a new task |
+| GET | `/api/tasks/{id}` | Get a specific task |
+| PUT | `/api/tasks/{id}` | Update a task |
+| DELETE | `/api/tasks/{id}` | Delete a task |
+
+### Example API Request
+
+Get all pending tasks:
+```bash
+curl http://localhost:8000/api/tasks?status=pending
+```
+
+Create a new task:
+```bash
+curl -X POST http://localhost:8000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"My Task","description":"Task details","due_date":"2024-12-31"}'
+```
+
+## Running Tests
+
+```bash
+php artisan test --filter TaskApiTest
+```
+
+## Project Structure
+
+```
+meet-task-manager/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/Api/TaskController.php  (Handles requests)
+│   │   ├── Requests/                           (Validates input)
+│   │   ├── Resources/                          (Formats output)
+│   │   ├── Traits/ApiResponse.php              (Standard responses)
+│   │   └── Helpers/PaginationHelper.php        (Pagination format)
+│   ├── Models/Task.php                         (Database model)
+│   ├── Services/TaskService.php                (Business logic)
+│   └── TaskStatus.php                          (Status enum)
+├── resources/
+│   ├── js/
+│   │   ├── App.vue                             (Main Vue component)
+│   │   ├── app.js                              (Vue setup)
+│   │   └── components/TaskList.vue             (Task list component)
+│   └── views/app.blade.php                     (HTML template)
+├── routes/
+│   ├── api.php                                 (API routes)
+│   └── web.php                                 (Web routes)
+└── tests/
+    └── Feature/TaskApiTest.php                 (API tests)
+```
+
+## Task Status Options
+
+- **Pending** - Task is waiting to be started
+- **In Process** - Task is currently being worked on
+- **Completed** - Task is finished
+
+## Common Issues
+
+### Issue: "npm run dev" not working
+**Solution:** Make sure Node.js is installed. Run `node -v` to check.
+
+### Issue: Database connection error
+**Solution:** Check your `.env` file has correct database credentials.
+
+### Issue: Page shows blank
+**Solution:** Make sure both `npm run dev` AND `php artisan serve` are running.
+
+### Issue: Tasks not loading
+**Solution:** Check browser console (F12) for errors. Verify API is working at `http://localhost:8000/api/tasks`
+
+### Issue: Port 8000 already in use
+**Solution:** Use a different port: `php artisan serve --port=8001`
+
+## Architecture
+
+- **Controllers** - Handle HTTP requests and responses
+- **Services** - Contain business logic
+- **Requests** - Validate incoming data
+- **Resources** - Transform data for API responses
+- **Models** - Represent database tables
+- **Traits** - Reusable functionality
+- **Helpers** - Utility functions
+
+**Commands Reference:**
+
+# Install dependencies
+composer install && npm install
+
+# Setup environment
+copy .env.example .env && php artisan key:generate
+
+# Setup database
+php artisan migrate && php artisan db:seed
+
+# Run application
+npm run dev # Terminal 1
+php artisan serve # Terminal 2
+
+# Run tests
+php artisan test --filter TaskApiTest
