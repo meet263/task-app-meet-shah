@@ -1,5 +1,33 @@
 <template>
     <div class="container">
+        <!-- Success Alert -->
+        <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ successMessage }}
+            <button type="button" class="btn-close" @click="successMessage = ''" aria-label="Close"></button>
+        </div>
+
+        <!-- Store Task Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Add New Task</h5>
+                <form @submit.prevent="addTask">
+                    <div class="mb-3">
+                        <input v-model="newTask.title" type="text" class="form-control" placeholder="Task title"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea v-model="newTask.description" class="form-control" placeholder="Description"
+                            rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <input v-model="newTask.due_date" type="date" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Listing -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <strong>Total Tasks: {{ pagination.total || 0 }}</strong>
@@ -88,8 +116,14 @@ export default {
     data() {
         return {
             tasks: [],
+            newTask: {
+                title: '',
+                description: '',
+                due_date: ''
+            },
             filter: '',
             loading: false,
+            successMessage: '',
             pagination: {
                 current_page: 1,
                 last_page: 1,
@@ -102,6 +136,12 @@ export default {
         };
     },
     methods: {
+        showSuccess(message) {
+            this.successMessage = message;
+            setTimeout(() => {
+                this.successMessage = '';
+            }, 3000);
+        },
         async loadTasks(page = 1) {
             this.loading = true;
             try {
@@ -119,6 +159,25 @@ export default {
                 alert('Failed to load tasks. Please try again.');
             } finally {
                 this.loading = false;
+            }
+        },
+        async addTask() {
+            if (!this.newTask.title.trim()) {
+                alert('Task title is required');
+                return;
+            }
+            try {
+                const response = await axios.post(this.apiUrl, this.newTask);
+                this.newTask = {
+                    title: '',
+                    description: '',
+                    due_date: ''
+                };
+                this.showSuccess(response.data.message || 'Task created successfully!');
+                this.loadTasks();
+            } catch (error) {
+                console.error('Failed to add task:', error);
+                alert('Failed to add task. Please try again.');
             }
         },
         changePage(page) {
