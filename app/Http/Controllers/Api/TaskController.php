@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Services\TaskService;
+use App\Http\Traits\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
+    use ApiResponse;
 
-    public function __construct(private TaskService $service)
-    {
-    }
+    public function __construct(private TaskService $service) {}
     /**
      * Display a listing of the resource.
      */
